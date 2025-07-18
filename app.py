@@ -75,6 +75,13 @@ def truncate_text(txt: str, max_chars: int = 8000) -> str:
     st.warning(f"Input truncated to {max_chars} characters to fit model context.")
     return txt[:max_chars]
 
+def count_words_tokens(text: str) -> tuple[int, int]:
+    """Estimate words and tokens for user text."""
+    words = len(text.split())
+    # Rough token estimate: 1 token ≈ 0.75 words for English text
+    tokens = int(words / 0.75)
+    return words, tokens
+
 # --- Input Source: upload OR paste ---------------------------------------------------
 uploaded_file = st.file_uploader(
     "Or upload a text/PDF file",
@@ -103,6 +110,11 @@ user_text = st.text_area(
     height=300,
     placeholder="Paste an article, blog, report, or notes here..."
 )
+# Show word/token count live
+if user_text.strip():
+    words, tokens = count_words_tokens(user_text)
+    st.caption(f"📊 **Word Count:** {words} | **Estimated Tokens:** {tokens}")
+
 
 summarize_clicked = st.button("Summarize")
 
