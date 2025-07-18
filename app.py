@@ -3,6 +3,8 @@ import textwrap
 import streamlit as st
 from dotenv import load_dotenv
 from groq import Groq
+from PyPDF2 import PdfReader
+
 
 load_dotenv()
 GROQ_API_KEY = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
@@ -13,7 +15,7 @@ if not GROQ_API_KEY:
 client = Groq(api_key=GROQ_API_KEY)
 
 st.set_page_config(page_title="AI Text Summarizer", page_icon="📝")
-st.title("📝 AI Text Summarizer (Groq LLaMA‑3)")
+st.title("📝 AI Text Summarizer")
 
 st.write("Paste text below and choose summary length. Model: `llama-3.3-70b-versatile`.")
 
@@ -73,8 +75,31 @@ def truncate_text(txt: str, max_chars: int = 8000) -> str:
     st.warning(f"Input truncated to {max_chars} characters to fit model context.")
     return txt[:max_chars]
 
+# --- Input Source: upload OR paste ---------------------------------------------------
+uploaded_file = st.file_uploader(
+    "Or upload a text/PDF file",
+    type=["txt", "pdf"],
+    help="Upload a .txt or .pdf; we’ll extract the text for you."
+)
+
+file_text = ""
+if uploaded_file is not None:
+    if uploaded_file.type == "text/plain":
+        file_text = uploaded_file.read().decode("utf-8", errors="ignore")
+    elif uploaded_file.type == "application/pdf":
+        try:
+            reader = PdfReader(uploaded_file)
+            extracted_pages = []
+            for page in reader.pages:
+                extracted_pages.append(page.extract_text() or "")
+            file_text = "\n".join(extracted_pages).strip()
+        except Exception as e:
+            st.error(f"Could not read PDF: {e}")
+
+# Always show text area (pre-filled if file uploaded)
 user_text = st.text_area(
-    "Paste text to summarize:",
+    "Paste text to summarize (or upload a file above):",
+    value=file_text if file_text else "",
     height=300,
     placeholder="Paste an article, blog, report, or notes here..."
 )
