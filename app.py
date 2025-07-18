@@ -154,6 +154,14 @@ if summarize_clicked:
     st.subheader("📘 Summary")
     st.markdown(summary)
 
+    # Download button for summary
+    st.download_button(
+        label="📥 Download Summary",
+        data=summary,
+        file_name="summary.txt",
+        mime="text/plain"
+    )
+
     # # Show raw prompt (debug toggle)
     # with st.expander("See Prompt Sent to Model"):
     #     st.code(prompt)
