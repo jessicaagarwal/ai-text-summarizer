@@ -1,4 +1,4 @@
-# 🤖 AI Chatbot using Streamlit & Groq API (Ongoing Project)
+# 📝 AI Text Summarizer using Streamlit & Groq API (Ongoing Project)
 
 A **simple AI-powered text summarizer** built with **Streamlit** and **Groq API**, leveraging **LLaMA-3 models**. Summarize articles, PDFs, or notes into concise summaries with custom tone and format options.
 
